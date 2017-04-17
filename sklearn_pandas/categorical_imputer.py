@@ -65,7 +65,12 @@ class CategoricalImputer(BaseEstimator, TransformerMixin):
         mask = _get_mask(X, self.missing_values)
         X = X[~mask]
 
-        self.fill_ = Counter(X).most_common(1)[0][0]
+        modes = pd.Series(X).mode()
+        if modes.shape[0] == 0:
+            raise ValueError('No value is repeteated more than '
+                             'twice in the column')
+        else:
+            self.fill_ = modes[0]
 
         return self
 
